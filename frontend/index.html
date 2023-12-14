@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timestamp Converter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100dvh;
+        }
+
+        .container {
+            width: 400px;
+            text-align: center;
+            padding: 20px;
+            box-shadow: 0 0 6px #000;
+        }
+
+        form {
+            padding-top: 20px;
+            border: 1px dotted #000;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        input {
+            padding: 10px 6px;
+            margin-block: 7px;
+        }
+
+        button {
+            border: none;
+            height: 40px
+        }
+
+        #convertButton {
+            margin-block: 20px;
+            width: 60%;
+            ;
+            color: #fff;
+            background-color: rgb(40, 134, 192);
+
+        }
+
+        #clearButton {
+            background-color: red;
+            color: #fff;
+            border-radius: 5px;
+            text-align: center;
+            margin-top: 5px;
+        }
+
+        #result,
+        #clearButton {
+            display: none;
+            /* Initially hide the result and clear button */
+        }
+
+        #result {
+            margin-top: 20px;
+            background-color: goldenrod;
+            padding-block: 10px;
+            color: #333;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Timestamp Converter</h1>
+
+        <form id="timestampForm">
+            <label for="inputDate">Enter Date (optional) </label><br />
+            <input type="text" id="inputDate" placeholder="YYYY-MM-DDT || UNIX">
+            <button type="submit" id="convertButton">Convert</button>
+        </form>
+
+        <div id="result"></div>
+
+        <button id="clearButton">Clear Result</button>
+
+    </div>
+    <script>
+        document.getElementById('timestampForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            let inputDate = document.getElementById('inputDate').value;
+
+            // If input is empty, set it to the current time
+            if (!inputDate) {
+                const currentDate = new Date();
+                inputDate = currentDate.toISOString();
+            }
+
+            // Check if input is a Unix timestamp
+            const isUnixTimestamp = /^\d+$/.test(inputDate);
+
+            // Construct the URL based on input type
+            const apiUrl = isUnixTimestamp
+                ? `http://localhost:5000/api/${inputDate}`
+                : `http://localhost:5000/api/${encodeURIComponent(inputDate)}`;
+
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    const resultDiv = document.getElementById('result');
+                    resultDiv.innerHTML = `<p>Unix Timestamp: ${data.unix}</p><p>UTC Date: ${data.utc}</p>`;
+
+                    // Show the result and clear button
+                    document.getElementById('result').style.display = 'block';
+                    document.getElementById('clearButton').style.display = 'block';
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    const resultDiv = document.getElementById('result');
+                    resultDiv.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+                });
+        });
+
+        document.getElementById('clearButton').addEventListener('click', function () {
+            // Clear the result and hide the result and clear button
+            document.getElementById('result').innerHTML = '';
+            document.getElementById('result').style.display = 'none';
+            document.getElementById('clearButton').style.display = 'none';
+        });
+    </script>
+</body>
+
+</html>
