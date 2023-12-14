@@ -104,8 +104,8 @@
 
             // Construct the URL based on input type
             const apiUrl = isUnixTimestamp
-                ? `http://localhost:5000/api/${inputDate}`
-                : `http://localhost:5000/api/${encodeURIComponent(inputDate)}`;
+                ? `https://time-microservice.onrender.com/api/${inputDate}`
+                : `https://time-microservice.onrender.com/api/${encodeURIComponent(inputDate)}`;
 
             fetch(apiUrl)
                 .then(response => response.json())
